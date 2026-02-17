@@ -1,35 +1,40 @@
+-- Combined script from both sources
+-- ts file was generated at discord.gg/25ms
+
+local fenv = getfenv()
+task.wait(1)
+
 -- ========== SERVICES ==========
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local TextChatService = game:GetService("TextChatService")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
-local Lighting = game:GetService("Lighting")
+local Lighting = game:GetService('Lighting')
 
 local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
-local Backpack = LocalPlayer:WaitForChild("Backpack")
+local Backpack = LocalPlayer:WaitForChild('Backpack')
+local Camera = workspace.CurrentCamera
 
--- ========== CLEANUP EXISTING UI ==========
-game.CoreGui:FindFirstChild("TigyFPSDevourUI"):Destroy()
-local existingUI = PlayerGui:FindFirstChild("CombinedUI")
-if existingUI then existingUI:Destroy() end
+-- ========== CLEANUP ==========
+if game.CoreGui:FindFirstChild('TigyFPSDevourUI') then
+    game.CoreGui:FindFirstChild('TigyFPSDevourUI'):Destroy()
+end
 
-task.wait(1)
-
--- ========== GRAPHICS OPTIMIZATION (FPS DEVOUR) ==========
+-- ========== GRAPHICS OPTIMIZATION ==========
 Lighting.GlobalShadows = false
 Lighting.EnvironmentDiffuseScale = 0
 Lighting.EnvironmentSpecularScale = 0
 
-for _, postEffect in ipairs(Lighting:GetChildren()) do
-    if postEffect:IsA("PostEffect") then
-        postEffect.Enabled = false
+for _, effect in ipairs(Lighting:GetChildren()) do
+    if effect:IsA('PostEffect') then
+        effect.Enabled = false
     end
 end
 
 for _, particle in ipairs(workspace:GetDescendants()) do
-    if particle:IsA("ParticleEmitter") then
+    if particle:IsA('ParticleEmitter') then
         particle.Enabled = false
     end
 end
@@ -59,47 +64,46 @@ local function RemoveAccessories(character)
     end)
 end
 
--- Handle existing character and future spawns
-if LocalPlayer.Character then
-    RemoveAccessories(LocalPlayer.Character)
-end
-LocalPlayer.CharacterAdded:Connect(RemoveAccessories)
-
--- Remove accessories from all existing humanoids in workspace
-for _, humanoid in ipairs(workspace:GetDescendants()) do
-    if humanoid:IsA("Humanoid") then
-        local parent = humanoid.Parent
+-- Remove accessories from existing humanoids
+for _, descendant in ipairs(workspace:GetDescendants()) do
+    if descendant:IsA('Humanoid') then
+        local parent = descendant.Parent
         for _, accessory in ipairs(parent:GetChildren()) do
-            if accessory:IsA("Accessory") then
+            if accessory:IsA('Accessory') then
                 accessory:Destroy()
             end
         end
         
         parent.ChildAdded:Connect(function(child)
-            if child:IsA("Accessory") then
+            if child:IsA('Accessory') then
                 child:Destroy()
             end
         end)
     end
 end
 
--- Monitor for new humanoids
+-- Remove accessories from new humanoids
 workspace.DescendantAdded:Connect(function(descendant)
-    if descendant:IsA("Humanoid") then
+    if descendant:IsA('Humanoid') then
         local parent = descendant.Parent
         for _, accessory in ipairs(parent:GetChildren()) do
-            if accessory:IsA("Accessory") then
+            if accessory:IsA('Accessory') then
                 accessory:Destroy()
             end
         end
         
         parent.ChildAdded:Connect(function(child)
-            if child:IsA("Accessory") then
+            if child:IsA('Accessory') then
                 child:Destroy()
             end
         end)
     end
 end)
+
+if LocalPlayer.Character then
+    RemoveAccessories(LocalPlayer.Character)
+end
+LocalPlayer.CharacterAdded:Connect(RemoveAccessories)
 
 -- ========== MAIN GUI ==========
 local ScreenGui = Instance.new("ScreenGui")
@@ -108,73 +112,73 @@ ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = PlayerGui
 
 -- ========== FPS DEVOUR FRAME ==========
-local FPSFrame = Instance.new("Frame")
-FPSFrame.Name = "FPSDevourFrame"
-FPSFrame.Size = UDim2.new(0, 340, 0, 160)
-FPSFrame.Position = UDim2.new(0.5, -170, 0.5, -80)
-FPSFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
-FPSFrame.BorderSizePixel = 0
-FPSFrame.Active = true
-FPSFrame.Draggable = true
-FPSFrame.Parent = ScreenGui
+local DevourFrame = Instance.new('Frame')
+DevourFrame.Name = 'TigyFPSDevourUI'
+DevourFrame.Parent = ScreenGui
+DevourFrame.Size = UDim2.new(0, 340, 0, 160)
+DevourFrame.Position = UDim2.new(0.5, -170, 0.5, -80)
+DevourFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+DevourFrame.BorderSizePixel = 0
+DevourFrame.Active = true
+DevourFrame.Draggable = true
 
-local FPSCorner = Instance.new("UICorner", FPSFrame)
-FPSCorner.CornerRadius = UDim.new(0, 18)
+local DevourCorner = Instance.new('UICorner', DevourFrame)
+DevourCorner.CornerRadius = UDim.new(0, 18)
 
-local FPSTitle = Instance.new("TextLabel")
-FPSTitle.Parent = FPSFrame
-FPSTitle.Size = UDim2.new(1, -20, 0, 40)
-FPSTitle.Position = UDim2.new(0, 10, 0, 10)
-FPSTitle.BackgroundTransparency = 1
-FPSTitle.Text = "Tigy's FPS Devour"
-FPSTitle.Font = Enum.Font.GothamBlack
-FPSTitle.TextSize = 20
-FPSTitle.TextXAlignment = Enum.TextXAlignment.Left
-FPSTitle.TextColor3 = Color3.new(1, 1, 1)
+local DevourTitle = Instance.new('TextLabel')
+DevourTitle.Parent = DevourFrame
+DevourTitle.Size = UDim2.new(1, -20, 0, 40)
+DevourTitle.Position = UDim2.new(0, 10, 0, 10)
+DevourTitle.BackgroundTransparency = 1
+DevourTitle.Text = 'Tigy\'s FPS Devour'
+DevourTitle.Font = Enum.Font.GothamBlack
+DevourTitle.TextSize = 20
+DevourTitle.TextXAlignment = Enum.TextXAlignment.Left
+DevourTitle.TextColor3 = Color3.new(1, 1, 1)
 
-local FPSButton = Instance.new("TextButton")
-FPSButton.Parent = FPSFrame
-FPSButton.Size = UDim2.new(1, -40, 0, 54)
-FPSButton.Position = UDim2.new(0, 20, 0, 80)
-FPSButton.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-FPSButton.Text = "FPS Devour (need auras)"
-FPSButton.Font = Enum.Font.GothamBold
-FPSButton.TextSize = 15
-FPSButton.TextColor3 = Color3.new(1, 1, 1)
-FPSButton.BorderSizePixel = 0
-FPSButton.AutoButtonColor = true
+local DevourButton = Instance.new('TextButton')
+DevourButton.Parent = DevourFrame
+DevourButton.Size = UDim2.new(1, -40, 0, 54)
+DevourButton.Position = UDim2.new(0, 20, 0, 80)
+DevourButton.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+DevourButton.Text = 'FPS Devour (need auras)'
+DevourButton.Font = Enum.Font.GothamBold
+DevourButton.TextSize = 15
+DevourButton.TextColor3 = Color3.new(1, 1, 1)
+DevourButton.BorderSizePixel = 0
+DevourButton.AutoButtonColor = true
 
-local FPSButtonCorner = Instance.new("UICorner", FPSButton)
-FPSButtonCorner.CornerRadius = UDim.new(0, 14)
+local DevourButtonCorner = Instance.new('UICorner', DevourButton)
+DevourButtonCorner.CornerRadius = UDim.new(0, 14)
 
-FPSButton.MouseButton1Click:Connect(function()
-    FPSButton.Text = "WORKING..."
-    FPSButton.AutoButtonColor = false
+DevourButton.MouseButton1Click:Connect(function()
+    DevourButton.Text = 'WORKING...'
+    DevourButton.AutoButtonColor = false
 
     local Character = LocalPlayer.Character
-    local Humanoid = Character:FindFirstChildOfClass("Humanoid")
-    local QuantumCloner = Backpack:FindFirstChild("Quantum Cloner")
+    local Humanoid = Character:FindFirstChildOfClass('Humanoid')
+    local QuantumCloner = Backpack:FindFirstChild('Quantum Cloner')
 
-    if QuantumCloner then
+    if QuantumCloner and Humanoid then
         Humanoid:EquipTool(QuantumCloner)
         task.wait()
 
-        for _, Tool in ipairs(Backpack:GetChildren()) do
-            if Tool:IsA("Tool") then
-                Tool.Parent = Character
+        for _, tool in ipairs(Backpack:GetChildren()) do
+            if tool:IsA('Tool') then
+                tool.Parent = Character
             end
         end
 
         task.wait()
         QuantumCloner:Activate()
         task.delay(0.5, function()
-            FPSButton.Text = "FPS Devour (need auras)"
-            FPSButton.AutoButtonColor = true
+            DevourButton.Text = 'FPS Devour (need auras)'
+            DevourButton.AutoButtonColor = true
         end)
     end
 end)
 
--- ========== AP SPAMMER FRAME ==========
+-- ========== AP SPAMMER GUI ==========
 local SpammerFrame = Instance.new("Frame")
 SpammerFrame.Name = "APSpammerFrame"
 SpammerFrame.Size = UDim2.fromOffset(180, 200)
@@ -238,7 +242,7 @@ local UIListLayout = Instance.new("UIListLayout")
 UIListLayout.Padding = UDim.new(0, 4)
 UIListLayout.Parent = Scroll
 
--- ========== SPEED BOOSTER FRAME ==========
+-- ========== SPEED BOOSTER GUI ==========
 local BoosterFrame = Instance.new("Frame")
 BoosterFrame.Name = "SpeedBoosterFrame"
 BoosterFrame.Size = UDim2.new(0, 180, 0, 100)
@@ -391,7 +395,7 @@ StatusLabel.TextSize = 10
 StatusLabel.TextXAlignment = Enum.TextXAlignment.Center
 StatusLabel.Parent = BoosterFrame
 
--- ========== ESP FRAME ==========
+-- ========== ESP GUI ==========
 local ESPFrame = Instance.new("Frame")
 ESPFrame.Name = "ESPFrame"
 ESPFrame.Size = UDim2.new(0, 180, 0, 70)
@@ -471,23 +475,7 @@ ESPStatusLabel.Parent = ESPFrame
 local draggingSpammer = false
 local draggingBooster = false
 local draggingESP = false
-local draggingFPS = false
 local dragStart, startPos
-
--- FPS dragging
-FPSFrame.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        draggingFPS = true
-        dragStart = input.Position
-        startPos = FPSFrame.Position
-        
-        input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then
-                draggingFPS = false
-            end
-        end)
-    end
-end)
 
 -- Spammer dragging
 TitleBar.InputBegan:Connect(function(input)
@@ -533,11 +521,6 @@ ESPFrame.InputBegan:Connect(function(input)
 end)
 
 UserInputService.InputChanged:Connect(function(input)
-    if draggingFPS and input.UserInputType == Enum.UserInputType.MouseMovement then
-        local delta = input.Position - dragStart
-        FPSFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-    end
-    
     if draggingSpammer and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
         local delta = input.Position - dragStart
         SpammerFrame.Position = UDim2.new(
@@ -564,7 +547,6 @@ UserInputService.InputEnded:Connect(function(input)
         draggingSpammer = false
         draggingBooster = false
         draggingESP = false
-        draggingFPS = false
     end
 end)
 
@@ -597,9 +579,11 @@ local function sendCommands(targetName)
     }
 
     local channel = TextChatService.TextChannels.RBXGeneral
-    for _, cmd in ipairs(commands) do
-        channel:SendAsync(cmd)
-        task.wait(0.12)
+    if channel then
+        for _, cmd in ipairs(commands) do
+            channel:SendAsync(cmd)
+            task.wait(0.12)
+        end
     end
 end
 
@@ -753,7 +737,7 @@ local function createESPBox(player)
     local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
     if not humanoidRootPart then return end
     
-    -- Create highlight effect
+    -- Create highlight effect directly on character
     local highlight = Instance.new("Highlight")
     highlight.Parent = character
     highlight.FillColor = Color3.fromRGB(0, 255, 255)
@@ -761,7 +745,7 @@ local function createESPBox(player)
     highlight.FillTransparency = 0.3
     highlight.OutlineTransparency = 0
     
-    -- Create name label
+    -- Create name label using SurfaceGui
     local surfaceGui = Instance.new("SurfaceGui")
     surfaceGui.Parent = humanoidRootPart
     surfaceGui.Face = Enum.NormalId.Top
@@ -782,6 +766,8 @@ local function createESPBox(player)
         surfaceGui = surfaceGui,
         nameLabel = nameLabel
     }
+    
+    print("✅ ESP added for: " .. player.Name)
 end
 
 local function removeESPBox(player)
@@ -793,6 +779,7 @@ local function removeESPBox(player)
             ESPBoxes[player].surfaceGui:Destroy()
         end
         ESPBoxes[player] = nil
+        print("❌ ESP removed for: " .. player.Name)
     end
 end
 
@@ -816,15 +803,19 @@ ESPToggleButton.MouseButton1Click:Connect(function()
     ESPStatusLabel.Text = statusText
     
     if ESPEnabled then
+        -- Add ESP to all players
         for _, player in pairs(Players:GetPlayers()) do
             if player ~= LocalPlayer then
                 createESPBox(player)
             end
         end
+        print("🔵 ESP ENABLED")
     else
+        -- Remove ESP from all players
         for player, _ in pairs(ESPBoxes) do
             removeESPBox(player)
         end
+        print("🔴 ESP DISABLED")
     end
 end)
 
@@ -853,5 +844,3 @@ end)
 ESPFrame.MouseLeave:Connect(function()
     TweenService:Create(ESPStroke, TweenInfo.new(0.2), { Transparency = 0.3 }):Play()
 end)
-
-print("✅ Combined script loaded successfully!")
