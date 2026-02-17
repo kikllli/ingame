@@ -1,31 +1,28 @@
--- Combined script from both sources
--- ts file was generated at discord.gg/25ms
+-- ========== OPTIMIZED MLML673 HUB ==========
+-- Combined & Ultra-Optimized Script
 
-local fenv = getfenv()
-task.wait(1)
-
--- ========== SERVICES ==========
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local TextChatService = game:GetService("TextChatService")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
-local Lighting = game:GetService('Lighting')
 
 local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 local Backpack = LocalPlayer:WaitForChild('Backpack')
-local Camera = workspace.CurrentCamera
+local Lighting = game:GetService('Lighting')
 
 -- ========== CLEANUP ==========
-if game.CoreGui:FindFirstChild('TigyFPSDevourUI') then
-    game.CoreGui:FindFirstChild('TigyFPSDevourUI'):Destroy()
+if game.CoreGui:FindFirstChild('CombinedUI') then
+    game.CoreGui:FindFirstChild('CombinedUI'):Destroy()
 end
 
--- ========== GRAPHICS OPTIMIZATION ==========
+-- ========== OPTIMIZATION ==========
 Lighting.GlobalShadows = false
 Lighting.EnvironmentDiffuseScale = 0
 Lighting.EnvironmentSpecularScale = 0
+Lighting.Ambient = Color3.fromRGB(128, 128, 128)
+Lighting.OutdoorAmbient = Color3.fromRGB(128, 128, 128)
 
 for _, effect in ipairs(Lighting:GetChildren()) do
     if effect:IsA('PostEffect') then
@@ -42,95 +39,75 @@ end
 -- ========== ACCESSORY REMOVAL ==========
 local function RemoveAccessories(character)
     if not character then return end
-    
-    for _, accessory in ipairs(character:GetDescendants()) do
-        if accessory:IsA("Accessory") then
-            accessory:Destroy()
+    for _, item in ipairs(character:GetDescendants()) do
+        if item:IsA("Accessory") then
+            item:Destroy()
         end
     end
-    
-    character.DescendantAdded:Connect(function(child)
+end
+
+local function OnCharacterAdded(character)
+    RemoveAccessories(character)
+    local connection
+    connection = character.DescendantAdded:Connect(function(child)
         if child:IsA("Accessory") then
             child:Destroy()
         end
     end)
-    
-    RunService.Heartbeat:Connect(function()
-        for _, item in ipairs(character:GetChildren()) do
-            if item:IsA("Accessory") then
-                item:Destroy()
-            end
-        end
+    character:WaitForChild("Humanoid").Died:Connect(function()
+        connection:Disconnect()
     end)
 end
 
--- Remove accessories from existing humanoids
-for _, descendant in ipairs(workspace:GetDescendants()) do
-    if descendant:IsA('Humanoid') then
-        local parent = descendant.Parent
-        for _, accessory in ipairs(parent:GetChildren()) do
-            if accessory:IsA('Accessory') then
-                accessory:Destroy()
-            end
-        end
-        
-        parent.ChildAdded:Connect(function(child)
-            if child:IsA('Accessory') then
-                child:Destroy()
-            end
-        end)
-    end
-end
+RemoveAccessories(LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait())
+LocalPlayer.CharacterAdded:Connect(OnCharacterAdded)
 
--- Remove accessories from new humanoids
 workspace.DescendantAdded:Connect(function(descendant)
     if descendant:IsA('Humanoid') then
         local parent = descendant.Parent
-        for _, accessory in ipairs(parent:GetChildren()) do
-            if accessory:IsA('Accessory') then
-                accessory:Destroy()
-            end
-        end
-        
-        parent.ChildAdded:Connect(function(child)
+        RemoveAccessories(parent)
+        local conn
+        conn = parent.ChildAdded:Connect(function(child)
             if child:IsA('Accessory') then
                 child:Destroy()
             end
         end)
+        descendant.Died:Connect(function()
+            conn:Disconnect()
+        end)
     end
 end)
-
-if LocalPlayer.Character then
-    RemoveAccessories(LocalPlayer.Character)
-end
-LocalPlayer.CharacterAdded:Connect(RemoveAccessories)
 
 -- ========== MAIN GUI ==========
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "CombinedUI"
 ScreenGui.ResetOnSpawn = false
-ScreenGui.Parent = PlayerGui
+ScreenGui.Parent = game.CoreGui
+
+-- ========== HELPER FUNCTION ==========
+local function CreateStyledFrame(size, position, name)
+    local frame = Instance.new("Frame")
+    frame.Name = name
+    frame.Size = size
+    frame.Position = position
+    frame.BackgroundColor3 = Color3.new(0.05, 0.05, 0.05)
+    frame.BorderSizePixel = 0
+    frame.Parent = ScreenGui
+    local corner = Instance.new("UICorner", frame)
+    corner.CornerRadius = UDim.new(0, 12)
+    return frame
+end
 
 -- ========== FPS DEVOUR FRAME ==========
-local DevourFrame = Instance.new('Frame')
-DevourFrame.Name = 'TigyFPSDevourUI'
-DevourFrame.Parent = ScreenGui
-DevourFrame.Size = UDim2.new(0, 340, 0, 160)
-DevourFrame.Position = UDim2.new(0.5, -170, 0.5, -80)
+local DevourFrame = CreateStyledFrame(UDim2.new(0, 340, 0, 160), UDim2.new(0.5, -170, 0.5, -80), "DevourFrame")
 DevourFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
-DevourFrame.BorderSizePixel = 0
-DevourFrame.Active = true
-DevourFrame.Draggable = true
-
-local DevourCorner = Instance.new('UICorner', DevourFrame)
-DevourCorner.CornerRadius = UDim.new(0, 18)
 
 local DevourTitle = Instance.new('TextLabel')
 DevourTitle.Parent = DevourFrame
 DevourTitle.Size = UDim2.new(1, -20, 0, 40)
 DevourTitle.Position = UDim2.new(0, 10, 0, 10)
 DevourTitle.BackgroundTransparency = 1
-DevourTitle.Text = 'Tigy\'s FPS Devour'
+DevourTitle.Text = 'MLML673 FPS DEVOUR'
 DevourTitle.Font = Enum.Font.GothamBlack
 DevourTitle.TextSize = 20
 DevourTitle.TextXAlignment = Enum.TextXAlignment.Left
@@ -147,28 +124,22 @@ DevourButton.TextSize = 15
 DevourButton.TextColor3 = Color3.new(1, 1, 1)
 DevourButton.BorderSizePixel = 0
 DevourButton.AutoButtonColor = true
-
-local DevourButtonCorner = Instance.new('UICorner', DevourButton)
-DevourButtonCorner.CornerRadius = UDim.new(0, 14)
+Instance.new('UICorner', DevourButton).CornerRadius = UDim.new(0, 14)
 
 DevourButton.MouseButton1Click:Connect(function()
     DevourButton.Text = 'WORKING...'
     DevourButton.AutoButtonColor = false
-
     local Character = LocalPlayer.Character
     local Humanoid = Character:FindFirstChildOfClass('Humanoid')
     local QuantumCloner = Backpack:FindFirstChild('Quantum Cloner')
-
     if QuantumCloner and Humanoid then
         Humanoid:EquipTool(QuantumCloner)
         task.wait()
-
         for _, tool in ipairs(Backpack:GetChildren()) do
             if tool:IsA('Tool') then
                 tool.Parent = Character
             end
         end
-
         task.wait()
         QuantumCloner:Activate()
         task.delay(0.5, function()
@@ -178,30 +149,15 @@ DevourButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- ========== AP SPAMMER GUI ==========
-local SpammerFrame = Instance.new("Frame")
-SpammerFrame.Name = "APSpammerFrame"
-SpammerFrame.Size = UDim2.fromOffset(180, 200)
-SpammerFrame.Position = UDim2.fromScale(0.5, 0.25)
-SpammerFrame.AnchorPoint = Vector2.new(0.5, 0.5)
-SpammerFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-SpammerFrame.BorderSizePixel = 0
-SpammerFrame.Parent = ScreenGui
+-- ========== AP SPAMMER ==========
+local SpammerFrame = CreateStyledFrame(UDim2.fromOffset(180, 200), UDim2.fromScale(0.5, 0.25), "Spammer")
 
-local SpammerCorner = Instance.new("UICorner")
-SpammerCorner.CornerRadius = UDim.new(0, 12)
-SpammerCorner.Parent = SpammerFrame
-
--- Title Bar for Spammer
 local TitleBar = Instance.new("Frame")
 TitleBar.Size = UDim2.new(1, 0, 0, 28)
 TitleBar.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
 TitleBar.BorderSizePixel = 0
 TitleBar.Parent = SpammerFrame
-
-local TitleCorner = Instance.new("UICorner")
-TitleCorner.CornerRadius = UDim.new(0, 12)
-TitleCorner.Parent = TitleBar
+Instance.new("UICorner", TitleBar).CornerRadius = UDim.new(0, 12)
 
 local TitleLabel = Instance.new("TextLabel")
 TitleLabel.Size = UDim2.new(1, -28, 1, 0)
@@ -214,22 +170,17 @@ TitleLabel.Font = Enum.Font.GothamBold
 TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
 TitleLabel.Parent = TitleBar
 
--- Minimize Button
-local MinimizeButton = Instance.new("TextButton")
-MinimizeButton.Size = UDim2.new(0, 22, 0, 22)
-MinimizeButton.Position = UDim2.new(1, -24, 0, 3)
-MinimizeButton.Text = "-"
-MinimizeButton.TextScaled = true
-MinimizeButton.Font = Enum.Font.GothamBold
-MinimizeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-MinimizeButton.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-MinimizeButton.Parent = TitleBar
+local MinButton = Instance.new("TextButton")
+MinButton.Size = UDim2.new(0, 22, 0, 22)
+MinButton.Position = UDim2.new(1, -24, 0, 3)
+MinButton.Text = "-"
+MinButton.TextScaled = true
+MinButton.Font = Enum.Font.GothamBold
+MinButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+MinButton.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+MinButton.Parent = TitleBar
+Instance.new("UICorner", MinButton).CornerRadius = UDim.new(0, 6)
 
-local MinCorner = Instance.new("UICorner")
-MinCorner.CornerRadius = UDim.new(0, 6)
-MinCorner.Parent = MinimizeButton
-
--- Player List
 local Scroll = Instance.new("ScrollingFrame")
 Scroll.Position = UDim2.new(0, 0, 0, 32)
 Scroll.Size = UDim2.new(1, 0, 1, -34)
@@ -242,40 +193,17 @@ local UIListLayout = Instance.new("UIListLayout")
 UIListLayout.Padding = UDim.new(0, 4)
 UIListLayout.Parent = Scroll
 
--- ========== SPEED BOOSTER GUI ==========
-local BoosterFrame = Instance.new("Frame")
-BoosterFrame.Name = "SpeedBoosterFrame"
-BoosterFrame.Size = UDim2.new(0, 180, 0, 100)
-BoosterFrame.Position = UDim2.new(0, 20, 0, 20)
-BoosterFrame.BackgroundColor3 = Color3.new(0, 0, 0)
-BoosterFrame.BackgroundTransparency = 0.2
-BoosterFrame.BorderSizePixel = 0
-BoosterFrame.Parent = ScreenGui
-
-local BoosterCorner = Instance.new("UICorner", BoosterFrame)
-BoosterCorner.CornerRadius = UDim.new(0, 8)
-
--- Gradient effect
-local UIGradient = Instance.new("UIGradient", BoosterFrame)
-UIGradient.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(20, 20, 20)),
-    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(40, 40, 40)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(20, 20, 20))
-})
-UIGradient.Rotation = 45
-
--- Animated white stroke
-local Stroke = Instance.new("UIStroke", BoosterFrame)
-Stroke.Color = Color3.new(1, 1, 1)
-Stroke.Thickness = 2
-Stroke.Transparency = 0.3
-
--- Animate the stroke
-RunService.Heartbeat:Connect(function()
-    UIGradient.Offset = Vector2.new((tick() % 2) - 1, 0)
+local minimized = false
+MinButton.MouseButton1Click:Connect(function()
+    minimized = not minimized
+    Scroll.Visible = not minimized
+    SpammerFrame.Size = minimized and UDim2.fromOffset(180, 28) or UDim2.fromOffset(180, 200)
+    MinButton.Text = minimized and "+" or "-"
 end)
 
--- Title
+-- ========== SPEED BOOSTER ==========
+local BoosterFrame = CreateStyledFrame(UDim2.new(0, 180, 0, 100), UDim2.new(0, 20, 0, 20), "Booster")
+
 local BoosterTitle = Instance.new("TextLabel")
 BoosterTitle.Size = UDim2.new(1, -20, 0, 20)
 BoosterTitle.Position = UDim2.new(0, 10, 0, 8)
@@ -287,7 +215,6 @@ BoosterTitle.TextSize = 14
 BoosterTitle.TextXAlignment = Enum.TextXAlignment.Left
 BoosterTitle.Parent = BoosterFrame
 
--- Speed Row
 local SpeedLabel = Instance.new("TextLabel")
 SpeedLabel.Size = UDim2.new(0, 50, 0, 20)
 SpeedLabel.Position = UDim2.new(0, 10, 0, 40)
@@ -300,7 +227,6 @@ SpeedLabel.TextXAlignment = Enum.TextXAlignment.Left
 SpeedLabel.Parent = BoosterFrame
 
 local SpeedBox = Instance.new("TextBox")
-SpeedBox.Name = "SpeedBox"
 SpeedBox.Size = UDim2.new(0, 60, 0, 22)
 SpeedBox.Position = UDim2.new(0, 65, 0, 39)
 SpeedBox.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
@@ -310,15 +236,9 @@ SpeedBox.Font = Enum.Font.Gotham
 SpeedBox.TextSize = 12
 SpeedBox.ClearTextOnFocus = false
 SpeedBox.Parent = BoosterFrame
+Instance.new("UICorner", SpeedBox).CornerRadius = UDim.new(0, 4)
+Instance.new("UIStroke", SpeedBox).Color = Color3.new(1, 0, 0)
 
-local SpeedBoxCorner = Instance.new("UICorner", SpeedBox)
-SpeedBoxCorner.CornerRadius = UDim.new(0, 4)
-
-local SpeedBoxStroke = Instance.new("UIStroke", SpeedBox)
-SpeedBoxStroke.Color = Color3.new(1, 0, 0)
-SpeedBoxStroke.Thickness = 1
-
--- Jump Row
 local JumpLabel = Instance.new("TextLabel")
 JumpLabel.Size = UDim2.new(0, 50, 0, 20)
 JumpLabel.Position = UDim2.new(0, 10, 0, 65)
@@ -331,7 +251,6 @@ JumpLabel.TextXAlignment = Enum.TextXAlignment.Left
 JumpLabel.Parent = BoosterFrame
 
 local JumpBox = Instance.new("TextBox")
-JumpBox.Name = "JumpBox"
 JumpBox.Size = UDim2.new(0, 60, 0, 22)
 JumpBox.Position = UDim2.new(0, 65, 0, 64)
 JumpBox.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
@@ -341,28 +260,18 @@ JumpBox.Font = Enum.Font.Gotham
 JumpBox.TextSize = 12
 JumpBox.ClearTextOnFocus = false
 JumpBox.Parent = BoosterFrame
+Instance.new("UICorner", JumpBox).CornerRadius = UDim.new(0, 4)
+Instance.new("UIStroke", JumpBox).Color = Color3.new(1, 0, 0)
 
-local JumpBoxCorner = Instance.new("UICorner", JumpBox)
-JumpBoxCorner.CornerRadius = UDim.new(0, 4)
-
-local JumpBoxStroke = Instance.new("UIStroke", JumpBox)
-JumpBoxStroke.Color = Color3.new(1, 0, 0)
-JumpBoxStroke.Thickness = 1
-
--- Toggle Button
 local ToggleButton = Instance.new("TextButton")
-ToggleButton.Name = "ToggleBooster"
 ToggleButton.Size = UDim2.new(0, 40, 0, 16)
 ToggleButton.Position = UDim2.new(1, -50, 0, 8)
 ToggleButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
 ToggleButton.Text = ""
 ToggleButton.AutoButtonColor = false
 ToggleButton.Parent = BoosterFrame
+Instance.new("UICorner", ToggleButton).CornerRadius = UDim.new(0, 8)
 
-local ToggleCorner = Instance.new("UICorner", ToggleButton)
-ToggleCorner.CornerRadius = UDim.new(0, 8)
-
--- Toggle Background
 local ToggleBackground = Instance.new("Frame", ToggleButton)
 ToggleBackground.Size = UDim2.new(1, 0, 1, 0)
 ToggleBackground.BackgroundColor3 = Color3.new(0.8, 0, 0)
@@ -370,20 +279,14 @@ ToggleBackground.BackgroundTransparency = 0.3
 ToggleBackground.ZIndex = 0
 Instance.new("UICorner", ToggleBackground).CornerRadius = UDim.new(0, 8)
 
--- Toggle Knob
 local Knob = Instance.new("Frame", ToggleButton)
-Knob.Name = "ToggleKnob"
 Knob.Size = UDim2.new(0, 12, 0, 12)
 Knob.Position = UDim2.new(0, 2, 0.5, 0)
 Knob.AnchorPoint = Vector2.new(0, 0.5)
 Knob.BackgroundColor3 = Color3.new(1, 1, 1)
 Knob.ZIndex = 2
-Knob.Parent = ToggleButton
+Instance.new("UICorner", Knob).CornerRadius = UDim.new(0, 6)
 
-local KnobCorner = Instance.new("UICorner", Knob)
-KnobCorner.CornerRadius = UDim.new(0, 6)
-
--- Status indicator
 local StatusLabel = Instance.new("TextLabel")
 StatusLabel.Size = UDim2.new(0, 40, 0, 12)
 StatusLabel.Position = UDim2.new(1, -50, 0, 26)
@@ -395,25 +298,13 @@ StatusLabel.TextSize = 10
 StatusLabel.TextXAlignment = Enum.TextXAlignment.Center
 StatusLabel.Parent = BoosterFrame
 
--- ========== ESP GUI ==========
-local ESPFrame = Instance.new("Frame")
-ESPFrame.Name = "ESPFrame"
-ESPFrame.Size = UDim2.new(0, 180, 0, 70)
-ESPFrame.Position = UDim2.new(0, 20, 0, 140)
-ESPFrame.BackgroundColor3 = Color3.new(0, 0, 0)
-ESPFrame.BackgroundTransparency = 0.2
-ESPFrame.BorderSizePixel = 0
-ESPFrame.Parent = ScreenGui
-
-local ESPCorner = Instance.new("UICorner", ESPFrame)
-ESPCorner.CornerRadius = UDim.new(0, 8)
-
+-- ========== ESP ==========
+local ESPFrame = CreateStyledFrame(UDim2.new(0, 180, 0, 70), UDim2.new(0, 20, 0, 140), "ESP")
 local ESPStroke = Instance.new("UIStroke", ESPFrame)
 ESPStroke.Color = Color3.new(0, 1, 1)
 ESPStroke.Thickness = 2
 ESPStroke.Transparency = 0.3
 
--- ESP Title
 local ESPTitle = Instance.new("TextLabel")
 ESPTitle.Size = UDim2.new(1, -20, 0, 20)
 ESPTitle.Position = UDim2.new(0, 10, 0, 5)
@@ -425,20 +316,15 @@ ESPTitle.TextSize = 14
 ESPTitle.TextXAlignment = Enum.TextXAlignment.Left
 ESPTitle.Parent = ESPFrame
 
--- ESP Toggle Button
 local ESPToggleButton = Instance.new("TextButton")
-ESPToggleButton.Name = "ESPToggle"
 ESPToggleButton.Size = UDim2.new(0, 40, 0, 16)
 ESPToggleButton.Position = UDim2.new(1, -50, 0, 8)
 ESPToggleButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
 ESPToggleButton.Text = ""
 ESPToggleButton.AutoButtonColor = false
 ESPToggleButton.Parent = ESPFrame
+Instance.new("UICorner", ESPToggleButton).CornerRadius = UDim.new(0, 8)
 
-local ESPToggleCorner = Instance.new("UICorner", ESPToggleButton)
-ESPToggleCorner.CornerRadius = UDim.new(0, 8)
-
--- ESP Toggle Background
 local ESPToggleBackground = Instance.new("Frame", ESPToggleButton)
 ESPToggleBackground.Size = UDim2.new(1, 0, 1, 0)
 ESPToggleBackground.BackgroundColor3 = Color3.new(0.8, 0, 0)
@@ -446,20 +332,14 @@ ESPToggleBackground.BackgroundTransparency = 0.3
 ESPToggleBackground.ZIndex = 0
 Instance.new("UICorner", ESPToggleBackground).CornerRadius = UDim.new(0, 8)
 
--- ESP Toggle Knob
 local ESPKnob = Instance.new("Frame", ESPToggleButton)
-ESPKnob.Name = "ESPToggleKnob"
 ESPKnob.Size = UDim2.new(0, 12, 0, 12)
 ESPKnob.Position = UDim2.new(0, 2, 0.5, 0)
 ESPKnob.AnchorPoint = Vector2.new(0, 0.5)
 ESPKnob.BackgroundColor3 = Color3.new(1, 1, 1)
 ESPKnob.ZIndex = 2
-ESPKnob.Parent = ESPToggleButton
+Instance.new("UICorner", ESPKnob).CornerRadius = UDim.new(0, 6)
 
-local ESPKnobCorner = Instance.new("UICorner", ESPKnob)
-ESPKnobCorner.CornerRadius = UDim.new(0, 6)
-
--- ESP Status Label
 local ESPStatusLabel = Instance.new("TextLabel")
 ESPStatusLabel.Size = UDim2.new(0, 40, 0, 12)
 ESPStatusLabel.Position = UDim2.new(1, -50, 0, 26)
@@ -471,376 +351,190 @@ ESPStatusLabel.TextSize = 10
 ESPStatusLabel.TextXAlignment = Enum.TextXAlignment.Center
 ESPStatusLabel.Parent = ESPFrame
 
--- ========== DRAGGING FUNCTIONALITY ==========
-local draggingSpammer = false
-local draggingBooster = false
-local draggingESP = false
-local dragStart, startPos
+-- ========== STATE & LOGIC ==========
+local BoosterEnabled = false
+local ESPEnabled = false
+local SpeedValue = 22.5
+local JumpValue = 35
+local ESPBoxes = {}
+local TweenInfo1 = TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+local TweenInfo2 = TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
 
--- Spammer dragging
-TitleBar.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-        draggingSpammer = true
-        dragStart = input.Position
-        startPos = SpammerFrame.Position
-    end
-end)
-
--- Booster dragging
-BoosterFrame.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        draggingBooster = true
-        dragStart = input.Position
-        startPos = BoosterFrame.Position
-        TweenService:Create(BoosterFrame, TweenInfo.new(0.1), { BackgroundTransparency = 0.3 }):Play()
-        
-        input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then
-                draggingBooster = false
-                TweenService:Create(BoosterFrame, TweenInfo.new(0.1), { BackgroundTransparency = 0.2 }):Play()
-            end
-        end)
-    end
-end)
-
--- ESP dragging
-ESPFrame.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        draggingESP = true
-        dragStart = input.Position
-        startPos = ESPFrame.Position
-        TweenService:Create(ESPFrame, TweenInfo.new(0.1), { BackgroundTransparency = 0.3 }):Play()
-        
-        input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then
-                draggingESP = false
-                TweenService:Create(ESPFrame, TweenInfo.new(0.1), { BackgroundTransparency = 0.2 }):Play()
-            end
-        end)
-    end
-end)
-
-UserInputService.InputChanged:Connect(function(input)
-    if draggingSpammer and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-        local delta = input.Position - dragStart
-        SpammerFrame.Position = UDim2.new(
-            startPos.X.Scale,
-            startPos.X.Offset + delta.X,
-            startPos.Y.Scale,
-            startPos.Y.Offset + delta.Y
-        )
-    end
+-- ========== DRAGGING ==========
+local function MakeDraggable(frame, handle)
+    local dragging = false
+    local dragStart, startPos
     
-    if draggingBooster and input.UserInputType == Enum.UserInputType.MouseMovement then
-        local delta = input.Position - dragStart
-        BoosterFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-    end
-    
-    if draggingESP and input.UserInputType == Enum.UserInputType.MouseMovement then
-        local delta = input.Position - dragStart
-        ESPFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-    end
-end)
-
-UserInputService.InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-        draggingSpammer = false
-        draggingBooster = false
-        draggingESP = false
-    end
-end)
-
--- ========== MINIMIZE FUNCTIONALITY ==========
-local minimized = false
-local normalSize = SpammerFrame.Size
-
-MinimizeButton.MouseButton1Click:Connect(function()
-    minimized = not minimized
-    
-    if minimized then
-        Scroll.Visible = false
-        SpammerFrame.Size = UDim2.fromOffset(180, 28)
-        MinimizeButton.Text = "+"
-    else
-        Scroll.Visible = true
-        SpammerFrame.Size = normalSize
-        MinimizeButton.Text = "-"
-    end
-end)
-
--- ========== SEND COMMANDS (AP SPAMMER) ==========
-local function sendCommands(targetName)
-    local commands = {
-        ";balloon " .. targetName,
-        ";rocket " .. targetName,
-        ";morph " .. targetName,
-        ";jumpscare " .. targetName,
-        ";jail " .. targetName
-    }
-
-    local channel = TextChatService.TextChannels.RBXGeneral
-    if channel then
-        for _, cmd in ipairs(commands) do
-            channel:SendAsync(cmd)
-            task.wait(0.12)
+    handle.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+            dragStart = input.Position
+            startPos = frame.Position
         end
-    end
-end
-
--- ========== PLAYER BUTTONS ==========
-local function createPlayerButton(player)
-    if player == LocalPlayer then return end
+    end)
     
-    local Button = Instance.new("TextButton")
-    Button.Size = UDim2.new(1, -6, 0, 24)
-    Button.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-    Button.TextColor3 = Color3.fromRGB(255, 255, 255)
-    Button.TextScaled = true
-    Button.Font = Enum.Font.Gotham
-    Button.Text = player.Name
-    Button.Parent = Scroll
+    UserInputService.InputChanged:Connect(function(input)
+        if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+            local delta = input.Position - dragStart
+            frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        end
+    end)
     
-    local Corner = Instance.new("UICorner")
-    Corner.CornerRadius = UDim.new(0, 6)
-    Corner.Parent = Button
-    
-    Button.MouseButton1Click:Connect(function()
-        sendCommands(player.Name)
+    UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = false
+        end
     end)
 end
 
--- ========== REFRESH PLAYER LIST ==========
-local function refreshList()
-    for _, child in pairs(Scroll:GetChildren()) do
-        if child:IsA("TextButton") then
-            child:Destroy()
-        end
-    end
-    
-    for _, player in pairs(Players:GetPlayers()) do
-        createPlayerButton(player)
-    end
-    
-    task.wait()
-    Scroll.CanvasSize = UDim2.new(0, 0, 0, UIListLayout.AbsoluteContentSize.Y + 4)
-end
+MakeDraggable(SpammerFrame, TitleBar)
+MakeDraggable(BoosterFrame, BoosterFrame)
+MakeDraggable(ESPFrame, ESPFrame)
 
-Players.PlayerAdded:Connect(refreshList)
-Players.PlayerRemoving:Connect(refreshList)
-
-refreshList()
-
--- ========== BOOSTER STATE ==========
-local BoosterEnabled = false
-local SpeedValue = 22.5
-local JumpValue = 35
-
-local TweenInfoSmooth = TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-local TweenInfoBounce = TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
-
--- Toggle Logic
+-- ========== BOOSTER TOGGLE ==========
 ToggleButton.MouseButton1Click:Connect(function()
     BoosterEnabled = not BoosterEnabled
+    local color = BoosterEnabled and Color3.new(0, 0.8, 0) or Color3.new(0.8, 0, 0)
+    local pos = BoosterEnabled and UDim2.new(1, -14, 0.5, 0) or UDim2.new(0, 2, 0.5, 0)
+    local text = BoosterEnabled and "ON" or "OFF"
+    local col = BoosterEnabled and Color3.new(0, 1, 0) or Color3.new(1, 0, 0)
     
-    local targetColor = BoosterEnabled and Color3.new(0, 0.8, 0) or Color3.new(0.8, 0, 0)
-    local targetPos = BoosterEnabled and UDim2.new(1, -14, 0.5, 0) or UDim2.new(0, 2, 0.5, 0)
-    local statusText = BoosterEnabled and "ON" or "OFF"
-    local statusColor = BoosterEnabled and Color3.new(0, 1, 0) or Color3.new(1, 0, 0)
-    
-    TweenService:Create(ToggleBackground, TweenInfoSmooth, { BackgroundColor3 = targetColor }):Play()
-    TweenService:Create(Knob, TweenInfoBounce, { Position = targetPos }):Play()
-    TweenService:Create(StatusLabel, TweenInfoSmooth, { TextColor3 = statusColor }):Play()
-    
-    TweenService:Create(Knob, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Size = UDim2.new(0, 16, 0, 16) }):Play()
-    task.wait(0.1)
-    TweenService:Create(Knob, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Size = UDim2.new(0, 12, 0, 12) }):Play()
-    
-    StatusLabel.Text = statusText
-    
-    if BoosterEnabled then
-        TweenService:Create(Stroke, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Thickness = 3 }):Play()
-        task.wait(0.3)
-        TweenService:Create(Stroke, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Thickness = 2 }):Play()
-    end
+    TweenService:Create(ToggleBackground, TweenInfo1, { BackgroundColor3 = color }):Play()
+    TweenService:Create(Knob, TweenInfo2, { Position = pos }):Play()
+    TweenService:Create(StatusLabel, TweenInfo1, { TextColor3 = col }):Play()
+    StatusLabel.Text = text
 end)
 
--- Update values when typing
-SpeedBox.FocusLost:Connect(function(enterPressed)
-    if enterPressed then
+SpeedBox.FocusLost:Connect(function(entered)
+    if entered then
         local num = tonumber(SpeedBox.Text)
-        if num and num > 0 then
-            SpeedValue = num
-            TweenService:Create(SpeedBoxStroke, TweenInfo.new(0.2), { Color = Color3.new(0, 1, 0) }):Play()
-            task.wait(0.2)
-            TweenService:Create(SpeedBoxStroke, TweenInfo.new(0.2), { Color = Color3.new(1, 0, 0) }):Play()
-        else
-            SpeedBox.Text = tostring(SpeedValue)
-        end
+        SpeedValue = (num and num > 0) and num or SpeedValue
+        SpeedBox.Text = tostring(SpeedValue)
     end
 end)
 
-JumpBox.FocusLost:Connect(function(enterPressed)
-    if enterPressed then
+JumpBox.FocusLost:Connect(function(entered)
+    if entered then
         local num = tonumber(JumpBox.Text)
-        if num and num > 0 then
-            JumpValue = num
-            TweenService:Create(JumpBoxStroke, TweenInfo.new(0.2), { Color = Color3.new(0, 1, 0) }):Play()
-            task.wait(0.2)
-            TweenService:Create(JumpBoxStroke, TweenInfo.new(0.2), { Color = Color3.new(1, 0, 0) }):Play()
-        else
-            JumpBox.Text = tostring(JumpValue)
-        end
+        JumpValue = (num and num > 0) and num or JumpValue
+        JumpBox.Text = tostring(JumpValue)
     end
 end)
 
 -- ========== BOOSTER HEARTBEAT ==========
 RunService.Heartbeat:Connect(function()
     if not BoosterEnabled then return end
-    local character = LocalPlayer.Character
-    if not character then return end
-    local humanoid = character:FindFirstChildOfClass("Humanoid")
-    local rootPart = character:FindFirstChild("HumanoidRootPart")
-    if not humanoid or not rootPart then return end
+    local char = LocalPlayer.Character
+    if not char then return end
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    local root = char:FindFirstChild("HumanoidRootPart")
+    if not hum or not root then return end
     
-    if humanoid.MoveDirection.Magnitude > 0 then
-        rootPart.Velocity = Vector3.new(
-            humanoid.MoveDirection.X * SpeedValue,
-            rootPart.Velocity.Y,
-            humanoid.MoveDirection.Z * SpeedValue
-        )
+    if hum.MoveDirection.Magnitude > 0 then
+        root.Velocity = Vector3.new(hum.MoveDirection.X * SpeedValue, root.Velocity.Y, hum.MoveDirection.Z * SpeedValue)
     end
-    
-    humanoid.UseJumpPower = true
-    humanoid.JumpPower = JumpValue
+    hum.JumpPower = JumpValue
 end)
 
--- ========== BOOSTER FRAME EFFECTS ==========
-BoosterFrame.MouseEnter:Connect(function()
-    TweenService:Create(Stroke, TweenInfo.new(0.2), { Transparency = 0.1 }):Play()
-end)
+-- ========== AP SPAMMER ==========
+local function SendCommands(name)
+    local cmds = {";balloon "..name, ";rocket "..name, ";morph "..name, ";jumpscare "..name, ";jail "..name}
+    local ch = TextChatService.TextChannels.RBXGeneral
+    if ch then
+        for _, cmd in ipairs(cmds) do
+            ch:SendAsync(cmd)
+            task.wait(0.12)
+        end
+    end
+end
 
-BoosterFrame.MouseLeave:Connect(function()
-    TweenService:Create(Stroke, TweenInfo.new(0.2), { Transparency = 0.3 }):Play()
-end)
+local function CreateButton(player)
+    if player == LocalPlayer then return end
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(1, -6, 0, 24)
+    btn.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.TextScaled = true
+    btn.Font = Enum.Font.Gotham
+    btn.Text = player.Name
+    btn.Parent = Scroll
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
+    btn.MouseButton1Click:Connect(function() SendCommands(player.Name) end)
+end
+
+local function RefreshList()
+    for _, child in ipairs(Scroll:GetChildren()) do
+        if child:IsA("TextButton") then child:Destroy() end
+    end
+    for _, player in ipairs(Players:GetPlayers()) do
+        CreateButton(player)
+    end
+    task.wait()
+    Scroll.CanvasSize = UDim2.new(0, 0, 0, UIListLayout.AbsoluteContentSize.Y + 4)
+end
+
+Players.PlayerAdded:Connect(RefreshList)
+Players.PlayerRemoving:Connect(RefreshList)
+RefreshList()
 
 -- ========== ESP SYSTEM ==========
-local ESPEnabled = false
-local ESPBoxes = {}
-
-local function createESPBox(player)
-    if player == LocalPlayer then return end
-    if ESPBoxes[player] then return end
+local function CreateESPBox(player)
+    if player == LocalPlayer or ESPBoxes[player] then return end
+    local char = player.Character
+    if not char then return end
+    local root = char:FindFirstChild("HumanoidRootPart")
+    if not root then return end
     
-    local character = player.Character
-    if not character then return end
+    local hl = Instance.new("Highlight")
+    hl.Parent = char
+    hl.FillColor = Color3.fromRGB(0, 255, 255)
+    hl.OutlineColor = Color3.fromRGB(0, 255, 255)
+    hl.FillTransparency = 0.3
     
-    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
-    if not humanoidRootPart then return end
-    
-    -- Create highlight effect directly on character
-    local highlight = Instance.new("Highlight")
-    highlight.Parent = character
-    highlight.FillColor = Color3.fromRGB(0, 255, 255)
-    highlight.OutlineColor = Color3.fromRGB(0, 255, 255)
-    highlight.FillTransparency = 0.3
-    highlight.OutlineTransparency = 0
-    
-    -- Create name label using SurfaceGui
-    local surfaceGui = Instance.new("SurfaceGui")
-    surfaceGui.Parent = humanoidRootPart
-    surfaceGui.Face = Enum.NormalId.Top
-    surfaceGui.CanvasSize = Vector2.new(200, 50)
-    
-    local nameLabel = Instance.new("TextLabel")
-    nameLabel.Size = UDim2.new(1, 0, 1, 0)
-    nameLabel.BackgroundColor3 = Color3.new(0, 0, 0)
-    nameLabel.BackgroundTransparency = 0.5
-    nameLabel.Text = player.Name
-    nameLabel.TextColor3 = Color3.fromRGB(0, 255, 255)
-    nameLabel.TextScaled = true
-    nameLabel.Font = Enum.Font.GothamBold
-    nameLabel.Parent = surfaceGui
-    
-    ESPBoxes[player] = {
-        highlight = highlight,
-        surfaceGui = surfaceGui,
-        nameLabel = nameLabel
-    }
-    
-    print("✅ ESP added for: " .. player.Name)
+    ESPBoxes[player] = hl
 end
 
-local function removeESPBox(player)
+local function RemoveESPBox(player)
     if ESPBoxes[player] then
-        if ESPBoxes[player].highlight then
-            ESPBoxes[player].highlight:Destroy()
-        end
-        if ESPBoxes[player].surfaceGui then
-            ESPBoxes[player].surfaceGui:Destroy()
-        end
+        ESPBoxes[player]:Destroy()
         ESPBoxes[player] = nil
-        print("❌ ESP removed for: " .. player.Name)
     end
 end
 
--- ESP Toggle
 ESPToggleButton.MouseButton1Click:Connect(function()
     ESPEnabled = not ESPEnabled
+    local color = ESPEnabled and Color3.new(0, 0.8, 0) or Color3.new(0.8, 0, 0)
+    local pos = ESPEnabled and UDim2.new(1, -14, 0.5, 0) or UDim2.new(0, 2, 0.5, 0)
+    local text = ESPEnabled and "ON" or "OFF"
+    local col = ESPEnabled and Color3.new(0, 1, 0) or Color3.new(1, 0, 0)
     
-    local targetColor = ESPEnabled and Color3.new(0, 0.8, 0) or Color3.new(0.8, 0, 0)
-    local targetPos = ESPEnabled and UDim2.new(1, -14, 0.5, 0) or UDim2.new(0, 2, 0.5, 0)
-    local statusText = ESPEnabled and "ON" or "OFF"
-    local statusColor = ESPEnabled and Color3.new(0, 1, 0) or Color3.new(1, 0, 0)
-    
-    TweenService:Create(ESPToggleBackground, TweenInfoSmooth, { BackgroundColor3 = targetColor }):Play()
-    TweenService:Create(ESPKnob, TweenInfoBounce, { Position = targetPos }):Play()
-    TweenService:Create(ESPStatusLabel, TweenInfoSmooth, { TextColor3 = statusColor }):Play()
-    
-    TweenService:Create(ESPKnob, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Size = UDim2.new(0, 16, 0, 16) }):Play()
-    task.wait(0.1)
-    TweenService:Create(ESPKnob, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Size = UDim2.new(0, 12, 0, 12) }):Play()
-    
-    ESPStatusLabel.Text = statusText
+    TweenService:Create(ESPToggleBackground, TweenInfo1, { BackgroundColor3 = color }):Play()
+    TweenService:Create(ESPKnob, TweenInfo2, { Position = pos }):Play()
+    TweenService:Create(ESPStatusLabel, TweenInfo1, { TextColor3 = col }):Play()
+    ESPStatusLabel.Text = text
     
     if ESPEnabled then
-        -- Add ESP to all players
-        for _, player in pairs(Players:GetPlayers()) do
-            if player ~= LocalPlayer then
-                createESPBox(player)
-            end
+        for _, p in ipairs(Players:GetPlayers()) do
+            if p ~= LocalPlayer then CreateESPBox(p) end
         end
-        print("🔵 ESP ENABLED")
     else
-        -- Remove ESP from all players
-        for player, _ in pairs(ESPBoxes) do
-            removeESPBox(player)
-        end
-        print("🔴 ESP DISABLED")
+        for p, _ in pairs(ESPBoxes) do RemoveESPBox(p) end
     end
 end)
 
--- Add ESP to new players
 Players.PlayerAdded:Connect(function(player)
     task.wait(0.5)
     if ESPEnabled then
         player.CharacterAdded:Connect(function()
             task.wait(0.1)
-            createESPBox(player)
+            CreateESPBox(player)
         end)
-        createESPBox(player)
+        CreateESPBox(player)
     end
 end)
 
--- Remove ESP when player leaves
 Players.PlayerRemoving:Connect(function(player)
-    removeESPBox(player)
+    RemoveESPBox(player)
 end)
 
--- ESP Frame effects
-ESPFrame.MouseEnter:Connect(function()
-    TweenService:Create(ESPStroke, TweenInfo.new(0.2), { Transparency = 0.1 }):Play()
-end)
-
-ESPFrame.MouseLeave:Connect(function()
-    TweenService:Create(ESPStroke, TweenInfo.new(0.2), { Transparency = 0.3 }):Play()
-end)
+print("✅ MLML673 HUB LOADED - Fully Optimized")
